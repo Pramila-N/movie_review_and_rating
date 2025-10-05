@@ -216,11 +216,11 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black transition-colors duration-300">
+  <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black transition-colors duration-300">
       <header className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 shadow-xl sticky top-0 z-40 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-2 sm:gap-0">
+            <div className="flex items-center gap-2 sm:gap-3">
               <Film className="w-8 h-8 text-red-500" />
               <div>
                 <h1 className="text-3xl font-bold text-white">
@@ -230,7 +230,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
               <button
                 onClick={() => setShowWatchlist(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-700 to-red-900 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg"
@@ -254,8 +254,8 @@ function App() {
             </div>
       {/* Watchlist Modal */}
       {showWatchlist && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full p-6 relative border-2 border-red-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-2 sm:px-0">
+          <div className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg p-4 sm:p-6 relative border-2 border-red-700 max-h-[90vh] overflow-y-auto">
             <button
               className="absolute top-3 right-3 text-gray-400 hover:text-white"
               onClick={() => setShowWatchlist(false)}
@@ -270,14 +270,14 @@ function App() {
             {watchlist.length === 0 ? (
               <p className="text-gray-400">Your watchlist is empty.</p>
             ) : (
-              <ul className="space-y-4 max-h-96 overflow-y-auto pr-2">
+              <ul className="space-y-4 max-h-80 sm:max-h-96 overflow-y-auto pr-2">
                 {watchlist.map(id => {
                   const movie = movies.find(m => m.id === id);
                   if (!movie) return null;
                   return (
-                    <li key={id} className="flex items-center gap-4 bg-gray-800 rounded-lg p-3 border border-gray-700">
-                      <img src={movie.poster} alt={movie.title} className="w-14 h-20 object-cover rounded-md border border-gray-700" />
-                      <div className="flex-1">
+                    <li key={id} className="flex items-center gap-2 sm:gap-4 bg-gray-800 rounded-lg p-2 sm:p-3 border border-gray-700">
+                      <img src={movie.poster} alt={movie.title} className="w-12 h-16 sm:w-14 sm:h-20 object-cover rounded-md border border-gray-700 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
                         <div className="font-semibold text-white">{movie.title}</div>
                         <div className="text-xs text-gray-400 mb-1">{movie.year} • {movie.genre.join(', ')}</div>
                         <button
@@ -381,9 +381,9 @@ function App() {
       </header>
 
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {badgeNotification && (
-           <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold flex items-center gap-3 animate-fadeIn">
+  <main className="max-w-7xl mx-auto px-2 sm:px-4 py-6 sm:py-8">
+      {badgeNotification && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-lg text-base sm:text-lg font-semibold flex items-center gap-2 sm:gap-3 animate-fadeIn">
              {badgeNotification.icons && badgeNotification.icons.map((icon, i) => (
                <span key={i} className="text-2xl drop-shadow">{icon}</span>
              ))}
@@ -398,15 +398,15 @@ function App() {
           const motdReviews = reviews.filter(r => r.movieId === motd.id);
           const avgRating = motdReviews.length > 0 ? (motdReviews.reduce((sum, r) => sum + r.rating, 0) / motdReviews.length).toFixed(1) : 'N/A';
           return (
-            <section className="mb-10">
+            <section className="mb-8 sm:mb-10">
               <div className="flex flex-col md:flex-row items-center bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-xl border border-gray-800 overflow-hidden relative">
                 <img
                   src={motd.poster || 'https://via.placeholder.com/400x600?text=No+Image'}
                   alt={motd.title}
-                  className="w-full md:w-72 h-80 object-cover md:rounded-l-3xl md:rounded-r-none rounded-t-3xl md:rounded-t-none shadow-lg border-r border-gray-800"
+                  className="w-full md:w-72 h-56 sm:h-72 md:h-80 object-cover md:rounded-l-3xl md:rounded-r-none rounded-t-3xl md:rounded-t-none shadow-lg border-r border-gray-800"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600?text=No+Image'; }}
                 />
-                <div className="flex-1 p-8 flex flex-col gap-4 relative">
+                <div className="flex-1 p-4 sm:p-8 flex flex-col gap-3 sm:gap-4 relative w-full">
                   <div className="absolute inset-0 pointer-events-none rounded-3xl md:rounded-l-none md:rounded-r-3xl bg-black/40" />
                   <div className="relative z-10 flex flex-col gap-4">
                     <div className="flex items-center gap-3 mb-2">
@@ -476,8 +476,8 @@ function App() {
           </>
         )}
 
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-2">
+        <div className="mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
             {selectedGenre ? `${selectedGenre} Movies` : 'All Movies'}
           </h2>
           <p className="text-gray-400">
@@ -486,7 +486,7 @@ function App() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {filteredMovies.map(movie => (
             <div key={movie.id} className="relative">
               {comparisonMovies.length < 2 && (

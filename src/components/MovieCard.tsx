@@ -20,7 +20,7 @@ export const MovieCard = ({ movie, reviews, onViewDetails, isMovieOfTheDay, isIn
     : 'N/A';
 
   return (
-    <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-red-900/50 relative group border border-red-900/30">
+  <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-red-900/50 relative group border border-red-900/30 flex flex-col">
       {isMovieOfTheDay && (
         <div className="absolute top-3 right-3 z-10 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
           <Film className="w-4 h-4" />
@@ -28,7 +28,7 @@ export const MovieCard = ({ movie, reviews, onViewDetails, isMovieOfTheDay, isIn
         </div>
       )}
 
-      <div className="relative h-64 overflow-hidden bg-gray-800">
+      <div className="relative h-44 sm:h-64 overflow-hidden bg-gray-800">
         <img
           src={movie.poster || 'https://via.placeholder.com/400x600?text=No+Image'}
           alt={movie.title}
@@ -38,8 +38,8 @@ export const MovieCard = ({ movie, reviews, onViewDetails, isMovieOfTheDay, isIn
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      <div className="p-5">
-        <div className="flex items-center justify-between mb-3">
+      <div className="p-3 sm:p-5 flex flex-col gap-2 sm:gap-3 flex-1">
+  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 sm:mb-3 gap-2 sm:gap-0">
           {onToggleWatchlist && (
             <button
               title={isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}

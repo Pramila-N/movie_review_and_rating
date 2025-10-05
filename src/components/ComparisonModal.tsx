@@ -34,8 +34,8 @@ export const ComparisonModal = ({ movie1, movie2, reviews, onClose }: Comparison
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-gray-900 rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp border border-red-900/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-gray-900 rounded-2xl w-full max-w-md sm:max-w-3xl lg:max-w-5xl max-h-[90vh] overflow-y-auto shadow-2xl animate-slideUp border border-red-900/30">
         <div className="sticky top-0 bg-gradient-to-r from-red-600 to-red-700 border-b border-red-800 p-4 flex justify-between items-center z-10">
           <h2 className="text-2xl font-bold text-white">Movie Comparison</h2>
           <button
