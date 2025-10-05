@@ -21,13 +21,6 @@ export const MovieCard = ({ movie, reviews, onViewDetails, isMovieOfTheDay, isIn
 
   return (
   <div className="bg-gray-900 rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-red-900/50 relative group border border-red-900/30 flex flex-col">
-      {isMovieOfTheDay && (
-        <div className="absolute top-3 right-3 z-10 bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg flex items-center gap-1">
-          <Film className="w-4 h-4" />
-          Movie of the Day
-        </div>
-      )}
-
       <div className="relative h-44 sm:h-64 overflow-hidden bg-gray-800">
         <img
           src={movie.poster || 'https://via.placeholder.com/400x600?text=No+Image'}

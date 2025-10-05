@@ -218,19 +218,29 @@ function App() {
   return (
   <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black transition-colors duration-300">
       <header className="bg-gradient-to-r from-red-600 to-red-700 dark:from-red-700 dark:to-red-800 shadow-xl sticky top-0 z-40 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between mb-4 gap-2 sm:gap-0">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-2">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
             <div className="flex items-center gap-2 sm:gap-3">
               <Film className="w-8 h-8 text-red-500" />
               <div>
-                <h1 className="text-3xl font-bold text-white">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
                   CineRate
                 </h1>
-                <p className="text-red-200 text-sm">Your Ultimate Movie Review Hub</p>
+                <p className="text-red-200 text-xs sm:text-sm leading-tight">Your Ultimate Movie Review Hub</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 sm:gap-4 mt-2 sm:mt-0">
+            <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-end">
+              <div className="w-full max-w-xs relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-red-400" />
+                <input
+                  type="text"
+                  placeholder="Search movies..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-2 py-2 rounded-md border border-red-400/30 bg-gray-900 text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm transition-colors duration-200"
+                />
+              </div>
               <button
                 onClick={() => setShowWatchlist(true)}
                 className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 bg-white text-red-700 border border-red-400 shadow hover:bg-red-100"
@@ -303,18 +313,7 @@ function App() {
       )}
           </div>
 
-          <div className="flex flex-col md:flex-row gap-3 items-center">
-            <div className="w-full max-w-xs relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-red-400" />
-              <input
-                type="text"
-                placeholder="Search movies..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-2 py-2 rounded-md border border-red-400/30 bg-gray-900 text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm transition-colors duration-200"
-              />
-            </div>
-          </div>
+          {/* Search bar below app title removed for compact header */}
 
           <div className="overflow-x-auto mt-4 -mx-2 pb-2">
             <div className="flex flex-nowrap gap-2 px-2 min-w-fit shadow-sm bg-gradient-to-b from-black/30 to-transparent rounded-lg">
@@ -477,25 +476,30 @@ function App() {
 
   <div id="movie-grid" className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
           {filteredMovies.map(movie => (
-            <div key={movie.id} className="relative">
-              {comparisonMovies.length < 2 && (
-                <button
-                  onClick={() => handleComparisonToggle(movie)}
-                  className={`absolute top-3 left-3 z-10 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    comparisonMovies.find(m => m.id === movie.id)
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-900/90 text-white hover:bg-gray-800/90'
-                  }`}
-                >
-                  {comparisonMovies.find(m => m.id === movie.id) ? '✓ Selected' : 'Compare'}
-                </button>
-              )}
-
+            <div key={movie.id} className="relative flex flex-col items-stretch">
+              <div className="absolute top-3 left-3 z-20 flex flex-col gap-2 items-start">
+                {comparisonMovies.length < 2 && (
+                  <button
+                    onClick={() => handleComparisonToggle(movie)}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 shadow ${
+                      comparisonMovies.find(m => m.id === movie.id)
+                        ? 'bg-red-600 text-white'
+                        : 'bg-gray-900/90 text-white hover:bg-gray-800/90'
+                    }`}
+                  >
+                    {comparisonMovies.find(m => m.id === movie.id) ? '✓ Selected' : 'Compare'}
+                  </button>
+                )}
+                {movie.id === movieOfTheDay && (
+                  <span className="bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow flex items-center gap-1">
+                    <Film className="w-4 h-4 mr-1" /> Movie of the Day
+                  </span>
+                )}
+              </div>
               <MovieCard
                 movie={movie}
                 reviews={reviews}
                 onViewDetails={() => setSelectedMovie(movie)}
-                isMovieOfTheDay={movie.id === movieOfTheDay}
                 isInWatchlist={watchlist.includes(movie.id)}
                 onToggleWatchlist={handleToggleWatchlist}
                 likeCount={movieLikes[movie.id] || 0}
