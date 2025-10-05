@@ -14,16 +14,24 @@ import {
   getMovieOfTheDay,
   setMovieOfTheDay,
   loadReviewLikes,
-  saveReviewLikes
+  saveReviewLikes,
+  loadMovieLikes,
+  saveMovieLikes,
+  loadWatchlist,
+  saveWatchlist
 } from './utils/localStorage';
 import { analyzeSentiment } from './utils/sentiment';
 import { checkBadges, AVAILABLE_BADGES } from './utils/badges';
-import { Film, Moon, Sun, GitCompare, Search, Filter } from 'lucide-react';
+import { Film, GitCompare, Search, Filter, Bookmark, X } from 'lucide-react';
 
 function App() {
+  const [showWatchlist, setShowWatchlist] = useState(false);
+  const [badgeNotification, setBadgeNotification] = useState<string | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [preferences, setPreferences] = useState<UserPreferences>({ theme: 'light', selectedAvatar: '😊' });
+  const [preferences, setPreferences] = useState<UserPreferences>({ theme: 'light', selectedAvatar: '😊' }); // theme is now ignored
+  // Add a class to body for light/dark theme
+  // No-op: theme switching removed
   const [movieOfTheDay, setMovieOfDayState] = useState<string | null>(null);
   const [currentUser, setCurrentUser] = useState<string>('');
   const [reviewLikes, setReviewLikes] = useState<Record<string, string[]>>({});
@@ -32,15 +40,21 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [comparisonMovies, setComparisonMovies] = useState<Movie[]>([]);
   const [showComparison, setShowComparison] = useState(false);
+  const [movieLikes, setMovieLikes] = useState<Record<string, number>>({});
+  const [watchlist, setWatchlist] = useState<string[]>([]);
 
   useEffect(() => {
     const storedReviews = loadReviews();
     const storedPreferences = loadPreferences();
     const storedLikes = loadReviewLikes();
+    const storedMovieLikes = loadMovieLikes();
+    const storedWatchlist = loadWatchlist();
 
     setReviews(storedReviews);
     setPreferences(storedPreferences);
     setReviewLikes(storedLikes);
+    setMovieLikes(storedMovieLikes);
+    setWatchlist(storedWatchlist);
 
     const today = new Date().toDateString();
     const stored = getMovieOfTheDay();
@@ -57,26 +71,40 @@ function App() {
       document.documentElement.classList.add('dark');
     }
   }, []);
+  // Watchlist handlers
+  const handleToggleWatchlist = (movieId: string) => {
+    let updated: string[];
+    if (watchlist.includes(movieId)) {
+      updated = watchlist.filter(id => id !== movieId);
+    } else {
+      updated = [...watchlist, movieId];
+    }
+    setWatchlist(updated);
+    saveWatchlist(updated);
+  };
+
+  // Movie like handlers
+  const handleLikeMovie = (movieId: string) => {
+    const current = movieLikes[movieId] || 0;
+    const updated = { ...movieLikes, [movieId]: current + 1 };
+    setMovieLikes(updated);
+    saveMovieLikes(updated);
+  };
 
   useEffect(() => {
     if (currentUser) {
+      const prevBadges = userBadges.filter(b => b.earned).map(b => b.id);
       const badges = checkBadges(reviews, currentUser);
       setUserBadges(badges);
+      const newEarned = badges.filter(b => b.earned && !prevBadges.includes(b.id));
+      if (newEarned.length > 0) {
+        setBadgeNotification(`🎉 You earned a badge: ${newEarned.map(b => b.name).join(', ')}!`);
+        setTimeout(() => setBadgeNotification(null), 4000);
+      }
     }
   }, [reviews, currentUser]);
 
-  const toggleTheme = () => {
-    const newTheme = preferences.theme === 'light' ? 'dark' : 'light';
-    const newPreferences = { ...preferences, theme: newTheme };
-    setPreferences(newPreferences);
-    savePreferences(newPreferences);
-
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  };
+  // Theme toggle removed
 
   const handleAddReview = (review: Omit<Review, 'id' | 'timestamp' | 'likes'>) => {
     const newReview: Review = {
@@ -149,14 +177,40 @@ function App() {
   };
 
   const allGenres = Array.from(new Set(movies.flatMap(m => m.genre)));
+  const specialFilters = [
+    { label: 'Highly Rated', value: '__highly_rated__' },
+    { label: 'Most Reviewed', value: '__most_reviewed__' }
+  ];
 
-  const filteredMovies = movies.filter(movie => {
-    const matchesGenre = !selectedGenre || movie.genre.includes(selectedGenre);
-    const matchesSearch = !searchQuery ||
+  let filteredMovies = movies;
+  if (selectedGenre === '__highly_rated__') {
+    filteredMovies = [...movies]
+      .filter(movie => reviews.some(r => r.movieId === movie.id))
+      .sort((a, b) => {
+        const aReviews = reviews.filter(r => r.movieId === a.id);
+        const bReviews = reviews.filter(r => r.movieId === b.id);
+        const aAvg = aReviews.length ? aReviews.reduce((sum, r) => sum + r.rating, 0) / aReviews.length : 0;
+        const bAvg = bReviews.length ? bReviews.reduce((sum, r) => sum + r.rating, 0) / bReviews.length : 0;
+        return bAvg - aAvg;
+      });
+  } else if (selectedGenre === '__most_reviewed__') {
+    filteredMovies = [...movies]
+      .filter(movie => reviews.some(r => r.movieId === movie.id))
+      .sort((a, b) => {
+        const aCount = reviews.filter(r => r.movieId === a.id).length;
+        const bCount = reviews.filter(r => r.movieId === b.id).length;
+        return bCount - aCount;
+      });
+  } else if (selectedGenre) {
+    filteredMovies = movies.filter(movie => movie.genre.includes(selectedGenre));
+  }
+  // Always apply search
+  if (searchQuery) {
+    filteredMovies = filteredMovies.filter(movie =>
       movie.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      movie.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesGenre && matchesSearch;
-  });
+      movie.genre.some(g => g.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black transition-colors duration-300">
@@ -174,6 +228,17 @@ function App() {
             </div>
 
             <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowWatchlist(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-700 to-red-900 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+                title="View Watchlist"
+              >
+                <Bookmark className="w-5 h-5" />
+                Watchlist
+                {watchlist.length > 0 && (
+                  <span className="ml-1 bg-red-600 text-white rounded-full px-2 py-0.5 text-xs font-bold">{watchlist.length}</span>
+                )}
+              </button>
               {comparisonMovies.length === 2 && (
                 <button
                   onClick={() => setShowComparison(true)}
@@ -183,18 +248,56 @@ function App() {
                   Compare ({comparisonMovies.length})
                 </button>
               )}
-
-              <button
-                onClick={toggleTheme}
-                className="p-2.5 rounded-lg bg-red-500/20 hover:bg-red-500/30 transition-colors duration-200"
-              >
-                {preferences.theme === 'light' ? (
-                  <Moon className="w-5 h-5 text-white" />
-                ) : (
-                  <Sun className="w-5 h-5 text-amber-400" />
-                )}
-              </button>
             </div>
+      {/* Watchlist Modal */}
+      {showWatchlist && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full p-6 relative border-2 border-red-700">
+            <button
+              className="absolute top-3 right-3 text-gray-400 hover:text-white"
+              onClick={() => setShowWatchlist(false)}
+              title="Close"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+              <Bookmark className="w-6 h-6 text-red-500" />
+              Your Watchlist
+            </h2>
+            {watchlist.length === 0 ? (
+              <p className="text-gray-400">Your watchlist is empty.</p>
+            ) : (
+              <ul className="space-y-4 max-h-96 overflow-y-auto pr-2">
+                {watchlist.map(id => {
+                  const movie = movies.find(m => m.id === id);
+                  if (!movie) return null;
+                  return (
+                    <li key={id} className="flex items-center gap-4 bg-gray-800 rounded-lg p-3 border border-gray-700">
+                      <img src={movie.poster} alt={movie.title} className="w-14 h-20 object-cover rounded-md border border-gray-700" />
+                      <div className="flex-1">
+                        <div className="font-semibold text-white">{movie.title}</div>
+                        <div className="text-xs text-gray-400 mb-1">{movie.year} • {movie.genre.join(', ')}</div>
+                        <button
+                          onClick={() => setSelectedMovie(movie)}
+                          className="text-xs text-red-400 hover:underline mr-3"
+                        >
+                          Details
+                        </button>
+                        <button
+                          onClick={() => handleToggleWatchlist(movie.id)}
+                          className="text-xs text-gray-400 hover:text-red-400"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
           </div>
 
           <div className="flex flex-col md:flex-row gap-4">
@@ -212,11 +315,15 @@ function App() {
             <div className="flex items-center gap-2">
               <Filter className="w-5 h-5 text-red-400" />
               <select
+                title="Select Genre or Filter"
                 value={selectedGenre || ''}
                 onChange={(e) => setSelectedGenre(e.target.value || null)}
                 className="px-4 py-2.5 rounded-lg border border-red-400/30 bg-gray-900 text-white focus:ring-2 focus:ring-red-500 transition-colors duration-200"
               >
-                <option value="">All Genres</option>
+                <option value="">All Movies</option>
+                {specialFilters.map(f => (
+                  <option key={f.value} value={f.value}>{f.label}</option>
+                ))}
                 {allGenres.map(genre => (
                   <option key={genre} value={genre}>{genre}</option>
                 ))}
@@ -225,6 +332,34 @@ function App() {
           </div>
 
           <div className="flex flex-wrap gap-2 mt-4">
+            <button
+              key="all"
+              onClick={() => {
+                setSelectedGenre(null);
+                // Optionally clear search as well for true 'all movies'
+                // setSearchQuery('');
+              }}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                !selectedGenre
+                  ? 'bg-red-600 text-white shadow-md'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+              }`}
+            >
+              All Movies
+            </button>
+            {specialFilters.map(f => (
+              <button
+                key={f.value}
+                onClick={() => setSelectedGenre(selectedGenre === f.value ? null : f.value)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                  selectedGenre === f.value
+                    ? 'bg-red-600 text-white shadow-md'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
             {allGenres.slice(0, 8).map(genre => (
               <button
                 key={genre}
@@ -242,17 +377,97 @@ function App() {
         </div>
       </header>
 
+
       <main className="max-w-7xl mx-auto px-4 py-8">
-        {currentUser && userBadges.some(b => b.earned) && (
-          <div className="mb-8">
-            <BadgeDisplay badges={userBadges} />
+        {badgeNotification && (
+          <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold animate-fadeIn">
+            {badgeNotification}
           </div>
         )}
 
-        {reviews.length > 0 && (
-          <div className="mb-8">
-            <Leaderboard reviews={reviews} />
-          </div>
+        {/* Movie of the Day Section */}
+        {movieOfTheDay && (() => {
+          const motd = movies.find(m => m.id === movieOfTheDay);
+          if (!motd) return null;
+          const motdReviews = reviews.filter(r => r.movieId === motd.id);
+          const avgRating = motdReviews.length > 0 ? (motdReviews.reduce((sum, r) => sum + r.rating, 0) / motdReviews.length).toFixed(1) : 'N/A';
+          return (
+            <section className="mb-10">
+              <div className="flex flex-col md:flex-row items-center bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-xl border border-gray-800 overflow-hidden relative">
+                <img
+                  src={motd.poster || 'https://via.placeholder.com/400x600?text=No+Image'}
+                  alt={motd.title}
+                  className="w-full md:w-72 h-80 object-cover md:rounded-l-3xl md:rounded-r-none rounded-t-3xl md:rounded-t-none shadow-lg border-r border-gray-800"
+                  onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600?text=No+Image'; }}
+                />
+                <div className="flex-1 p-8 flex flex-col gap-4 relative">
+                  <div className="absolute inset-0 pointer-events-none rounded-3xl md:rounded-l-none md:rounded-r-3xl bg-black/40" />
+                  <div className="relative z-10 flex flex-col gap-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Film className="w-7 h-7 text-red-500" />
+                      <span className="text-lg font-bold text-red-400 tracking-wide uppercase drop-shadow">Movie of the Day</span>
+                    </div>
+                    <h2 className="text-3xl font-extrabold text-white mb-1 drop-shadow-lg">{motd.title}</h2>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {motd.genre.map(g => (
+                        <span key={g} className="px-3 py-1 bg-red-900/80 text-red-200 text-xs rounded-full border border-red-700/40 drop-shadow">{g}</span>
+                      ))}
+                    </div>
+                    <p className="text-gray-100 text-base mb-2 line-clamp-3 drop-shadow-lg">{motd.description}</p>
+                    <div className="flex items-center gap-4 mb-2">
+                      <span className="text-white font-semibold drop-shadow">{motd.year}</span>
+                      <span className="flex items-center gap-1 text-amber-400 font-bold drop-shadow"><svg xmlns='http://www.w3.org/2000/svg' className='w-5 h-5 fill-amber-400' viewBox='0 0 24 24'><path d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/></svg>{avgRating}</span>
+                      <span className="text-gray-300 text-sm drop-shadow">({motdReviews.length} review{motdReviews.length !== 1 ? 's' : ''})</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-gray-200 text-sm mb-2">
+                      <span>Cast:</span>
+                      {motd.cast.map(c => <span key={c} className="bg-red-800/80 px-2 py-0.5 rounded-full drop-shadow">{c}</span>)}
+                    </div>
+                    <div className="flex gap-3 flex-wrap mb-2">
+                      <button
+                        title={watchlist.includes(motd.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
+                        onClick={() => handleToggleWatchlist(motd.id)}
+                        className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${watchlist.includes(motd.id) ? 'bg-red-700 text-white border-red-700' : 'bg-gray-800 text-red-300 border-red-700 hover:bg-red-900/60'} shadow`}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${watchlist.includes(motd.id) ? 'fill-white' : 'fill-none'}`} viewBox="0 0 24 24"><path d="M19 21 12 17.27 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        {watchlist.includes(motd.id) ? 'In Watchlist' : 'Add to Watchlist'}
+                      </button>
+                      <button
+                        title="Like Movie"
+                        onClick={() => handleLikeMovie(motd.id)}
+                        className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-800 text-red-300 border border-red-700 hover:bg-red-900/60 shadow"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24"><path d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.5 16 21 16 21H12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
+                        {movieLikes[motd.id] || 0}
+                      </button>
+                      <button
+                        onClick={() => setSelectedMovie(motd)}
+                        className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 drop-shadow-lg"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* Show badges/leaderboard if 'All Movies' or no filter is selected */}
+        {(!selectedGenre || selectedGenre === '') && (
+          <>
+            {currentUser && userBadges.some(b => b.earned) && (
+              <div className="mb-8">
+                <BadgeDisplay badges={userBadges} />
+              </div>
+            )}
+            {reviews.length > 0 && (
+              <div className="mb-8">
+                <Leaderboard reviews={reviews} />
+              </div>
+            )}
+          </>
         )}
 
         <div className="mb-6">
@@ -286,6 +501,10 @@ function App() {
                 reviews={reviews}
                 onViewDetails={() => setSelectedMovie(movie)}
                 isMovieOfTheDay={movie.id === movieOfTheDay}
+                isInWatchlist={watchlist.includes(movie.id)}
+                onToggleWatchlist={handleToggleWatchlist}
+                likeCount={movieLikes[movie.id] || 0}
+                onLikeMovie={handleLikeMovie}
               />
             </div>
           ))}
@@ -319,7 +538,10 @@ function App() {
           movie1={comparisonMovies[0]}
           movie2={comparisonMovies[1]}
           reviews={reviews}
-          onClose={() => setShowComparison(false)}
+          onClose={() => {
+            setShowComparison(false);
+            setComparisonMovies([]);
+          }}
         />
       )}
     </div>

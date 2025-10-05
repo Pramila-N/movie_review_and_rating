@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Movie, Review } from '../types';
 import { X, Star, Users, Calendar, Share2, ArrowUpDown } from 'lucide-react';
-import { StarRating } from './StarRating';
 import { ReviewItem } from './ReviewItem';
 import { ReviewForm } from './ReviewForm';
 
@@ -86,6 +85,7 @@ export const MovieModal = ({
           <button
             onClick={onClose}
             className="p-2 hover:bg-red-500/30 rounded-lg transition-colors duration-200"
+            title="Close"
           >
             <X className="w-6 h-6 text-white" />
           </button>
@@ -102,6 +102,7 @@ export const MovieModal = ({
               <button
                 onClick={handleShare}
                 className="w-full mt-4 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-medium transition-colors duration-200"
+                title="Share this movie"
               >
                 <Share2 className="w-4 h-4" />
                 Share
@@ -174,6 +175,7 @@ export const MovieModal = ({
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortOption)}
                   className="px-3 py-1.5 bg-gray-800 text-white rounded-lg border-none text-sm focus:ring-2 focus:ring-red-500"
+                  title="Sort Reviews"
                 >
                   <option value="latest">Latest First</option>
                   <option value="highest">Highest Rated</option>

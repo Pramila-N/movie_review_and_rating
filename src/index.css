@@ -1,3 +1,51 @@
+body.light {
+  background: linear-gradient(to bottom right, #fff 0%, #f3f4f6 100%) !important;
+  color: #222 !important;
+}
+body.light .bg-gray-900,
+body.light .bg-black {
+  background-color: #fff !important;
+}
+body.light .text-white {
+  color: #222 !important;
+}
+body.light .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #fff 0%, #f3f4f6 100%) !important;
+}
+body.light .bg-gradient-to-r {
+  background: linear-gradient(to right, #f87171 0%, #fbbf24 100%) !important;
+}
+body.light .border-red-900\/30 {
+  border-color: #f87171 !important;
+}
+body.light .bg-gray-800,
+body.light .bg-gray-900 {
+  background-color: #f3f4f6 !important;
+}
+body.light .text-red-200 {
+  color: #b91c1c !important;
+}
+body.light .bg-red-600 {
+  background-color: #f87171 !important;
+}
+body.light .bg-red-700 {
+  background-color: #b91c1c !important;
+}
+body.light .bg-red-900\/50 {
+  background-color: #fecaca !important;
+}
+body.light .bg-gray-700 {
+  background-color: #e5e7eb !important;
+}
+body.light .text-gray-300 {
+  color: #374151 !important;
+}
+body.light .text-gray-400 {
+  color: #6b7280 !important;
+}
+body.light .bg-gray-900\/90 {
+  background-color: #f3f4f6 !important;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

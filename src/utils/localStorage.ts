@@ -5,7 +5,29 @@ const STORAGE_KEYS = {
   PREFERENCES: 'userPreferences',
   MOVIE_OF_DAY: 'movieOfTheDay',
   BADGES: 'userBadges',
-  REVIEW_LIKES: 'reviewLikes'
+  REVIEW_LIKES: 'reviewLikes',
+  MOVIE_LIKES: 'movieLikes',
+  WATCHLIST: 'watchlist',
+};
+
+// Movie Likes
+export const loadMovieLikes = (): Record<string, number> => {
+  const stored = localStorage.getItem(STORAGE_KEYS.MOVIE_LIKES);
+  return stored ? JSON.parse(stored) : {};
+};
+
+export const saveMovieLikes = (likes: Record<string, number>): void => {
+  localStorage.setItem(STORAGE_KEYS.MOVIE_LIKES, JSON.stringify(likes));
+};
+
+// Watchlist (array of movie ids)
+export const loadWatchlist = (): string[] => {
+  const stored = localStorage.getItem(STORAGE_KEYS.WATCHLIST);
+  return stored ? JSON.parse(stored) : [];
+};
+
+export const saveWatchlist = (watchlist: string[]): void => {
+  localStorage.setItem(STORAGE_KEYS.WATCHLIST, JSON.stringify(watchlist));
 };
 
 export const loadReviews = (): Review[] => {

@@ -41,6 +41,7 @@ export const ComparisonModal = ({ movie1, movie2, reviews, onClose }: Comparison
           <button
             onClick={onClose}
             className="p-2 hover:bg-red-500/30 rounded-lg transition-colors duration-200"
+            title="Close"
           >
             <X className="w-6 h-6 text-white" />
           </button>
@@ -57,9 +58,11 @@ export const ComparisonModal = ({ movie1, movie2, reviews, onClose }: Comparison
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">{movie1.title}</h3>
                 <div className="flex items-center gap-2 mb-3">
-                  <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                  <span className="font-semibold text-white">{stats1.avgRating}</span>
-                  <span className="text-gray-400">({stats1.reviewCount} reviews)</span>
+                  <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-lg shadow text-lg font-bold text-amber-400">
+                    <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                    {stats1.avgRating}
+                  </span>
+                  <span className="text-gray-400 ml-2">({stats1.reviewCount} reviews)</span>
                 </div>
               </div>
             </div>
@@ -73,9 +76,11 @@ export const ComparisonModal = ({ movie1, movie2, reviews, onClose }: Comparison
               <div>
                 <h3 className="text-2xl font-bold text-white mb-2">{movie2.title}</h3>
                 <div className="flex items-center gap-2 mb-3">
-                  <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                  <span className="font-semibold text-white">{stats2.avgRating}</span>
-                  <span className="text-gray-400">({stats2.reviewCount} reviews)</span>
+                  <span className="flex items-center gap-1 bg-white/10 px-3 py-1 rounded-lg shadow text-lg font-bold text-amber-400">
+                    <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                    {stats2.avgRating}
+                  </span>
+                  <span className="text-gray-400 ml-2">({stats2.reviewCount} reviews)</span>
                 </div>
               </div>
             </div>
@@ -119,8 +124,8 @@ export const ComparisonModal = ({ movie1, movie2, reviews, onClose }: Comparison
                 </tr>
                 <tr className="border-b border-red-900/30">
                   <td className="p-4 font-medium text-gray-300">Average Rating</td>
-                  <td className="p-4 text-gray-900 dark:text-white font-semibold">{stats1.avgRating} ⭐</td>
-                  <td className="p-4 text-gray-900 dark:text-white font-semibold">{stats2.avgRating} ⭐</td>
+                  <td className="p-4 text-amber-400 font-bold text-lg">{stats1.avgRating} <Star className="inline w-4 h-4 fill-amber-400 text-amber-400 ml-1" /></td>
+                  <td className="p-4 text-amber-400 font-bold text-lg">{stats2.avgRating} <Star className="inline w-4 h-4 fill-amber-400 text-amber-400 ml-1" /></td>
                 </tr>
                 <tr className="border-b border-red-900/30">
                   <td className="p-4 font-medium text-gray-300">Total Reviews</td>
