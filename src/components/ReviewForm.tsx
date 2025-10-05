@@ -28,13 +28,19 @@ export const ReviewForm = ({ movieId, onSubmit, editingReview, onCancelEdit, onU
     }
   }, [editingReview]);
 
+  const [formError, setFormError] = useState<{ username?: boolean; rating?: boolean; comment?: boolean }>({});
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!username.trim() || rating === 0 || !comment.trim()) {
-      alert('Please fill in all fields and provide a rating');
-      return;
-    }
+    const errorObj: { username?: boolean; rating?: boolean; comment?: boolean } = {};
+    if (!username.trim()) errorObj.username = true;
+    if (rating === 0) errorObj.rating = true;
+    if (!comment.trim()) errorObj.comment = true;
+    setFormError(errorObj);
+    if (Object.keys(errorObj).length > 0) return;
+
+    setFormError({});
 
     if (editingReview && onUpdate) {
       onUpdate({ username, avatar, rating, comment });
@@ -61,6 +67,7 @@ export const ReviewForm = ({ movieId, onSubmit, editingReview, onCancelEdit, onU
 
   return (
     <form onSubmit={handleSubmit} className="bg-gray-800/50 rounded-lg p-6 space-y-4 border border-red-900/30">
+      {/* No global error, show per-field errors below */}
       <div className="grid md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -71,9 +78,12 @@ export const ReviewForm = ({ movieId, onSubmit, editingReview, onCancelEdit, onU
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter your name"
-            className="w-full px-4 py-2 rounded-lg border border-red-700/30 bg-gray-900 text-white focus:ring-2 focus:ring-red-500 focus:border-red-500"
+            className={`w-full px-4 py-2 rounded-lg border ${formError.username ? 'border-red-500 ring-2 ring-red-400' : 'border-red-700/30'} bg-gray-900 text-white focus:ring-2 focus:ring-red-500 focus:border-red-500`}
             maxLength={30}
           />
+          {formError.username && (
+            <div className="mt-1 text-red-400 text-xs font-semibold animate-fadeIn">Please enter your name.</div>
+          )}
         </div>
 
         <div>
@@ -117,7 +127,12 @@ export const ReviewForm = ({ movieId, onSubmit, editingReview, onCancelEdit, onU
         <label className="block text-sm font-medium text-gray-300 mb-2">
           Rating
         </label>
-        <StarRating rating={rating} onRatingChange={setRating} size="lg" />
+        <div className={formError.rating ? 'ring-2 ring-red-400 rounded-lg p-1 bg-gray-900' : ''}>
+          <StarRating rating={rating} onRatingChange={setRating} size="lg" />
+        </div>
+        {formError.rating && (
+          <div className="mt-1 text-red-400 text-xs font-semibold animate-fadeIn">Please provide a rating.</div>
+        )}
       </div>
 
       <div>
@@ -129,9 +144,12 @@ export const ReviewForm = ({ movieId, onSubmit, editingReview, onCancelEdit, onU
           onChange={(e) => setComment(e.target.value)}
           placeholder="Share your thoughts about this movie..."
           rows={4}
-          className="w-full px-4 py-2 rounded-lg border border-red-700/30 bg-gray-900 text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+          className={`w-full px-4 py-2 rounded-lg border ${formError.comment ? 'border-red-500 ring-2 ring-red-400' : 'border-red-700/30'} bg-gray-900 text-white placeholder-gray-500 focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none`}
           maxLength={500}
         />
+        {formError.comment && (
+          <div className="mt-1 text-red-400 text-xs font-semibold animate-fadeIn">Please enter your review.</div>
+        )}
         <p className="text-sm text-gray-400 mt-1 text-right">
           {comment.length}/500
         </p>

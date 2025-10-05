@@ -26,7 +26,7 @@ import { Film, GitCompare, Search, Filter, Bookmark, X } from 'lucide-react';
 
 function App() {
   const [showWatchlist, setShowWatchlist] = useState(false);
-  const [badgeNotification, setBadgeNotification] = useState<string | null>(null);
+    const [badgeNotification, setBadgeNotification] = useState<{ message: string; icons: string[] } | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [preferences, setPreferences] = useState<UserPreferences>({ theme: 'light', selectedAvatar: '😊' }); // theme is now ignored
@@ -98,7 +98,10 @@ function App() {
       setUserBadges(badges);
       const newEarned = badges.filter(b => b.earned && !prevBadges.includes(b.id));
       if (newEarned.length > 0) {
-        setBadgeNotification(`🎉 You earned a badge: ${newEarned.map(b => b.name).join(', ')}!`);
+          setBadgeNotification({
+            message: `You earned a badge: ${newEarned.map(b => b.name).join(', ')}!`,
+            icons: newEarned.map(b => b.icon)
+          });
         setTimeout(() => setBadgeNotification(null), 4000);
       }
     }
@@ -380,8 +383,11 @@ function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {badgeNotification && (
-          <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold animate-fadeIn">
-            {badgeNotification}
+           <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg text-lg font-semibold flex items-center gap-3 animate-fadeIn">
+             {badgeNotification.icons && badgeNotification.icons.map((icon, i) => (
+               <span key={i} className="text-2xl drop-shadow">{icon}</span>
+             ))}
+             <span>{badgeNotification.message}</span>
           </div>
         )}
 
