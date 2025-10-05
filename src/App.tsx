@@ -334,48 +334,48 @@ function App() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mt-4">
-            <button
-              key="all"
-              onClick={() => {
-                setSelectedGenre(null);
-                // Optionally clear search as well for true 'all movies'
-                // setSearchQuery('');
-              }}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                !selectedGenre
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              All Movies
-            </button>
-            {specialFilters.map(f => (
+          <div className="overflow-x-auto mt-4 -mx-2 pb-2">
+            <div className="flex flex-nowrap gap-2 px-2 min-w-fit shadow-sm bg-gradient-to-b from-black/30 to-transparent rounded-lg">
               <button
-                key={f.value}
-                onClick={() => setSelectedGenre(selectedGenre === f.value ? null : f.value)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                  selectedGenre === f.value
+                key="all"
+                onClick={() => {
+                  setSelectedGenre(null);
+                }}
+                className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                  !selectedGenre
                     ? 'bg-red-600 text-white shadow-md'
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                {f.label}
+                All Movies
               </button>
-            ))}
-            {allGenres.slice(0, 8).map(genre => (
-              <button
-                key={genre}
-                onClick={() => setSelectedGenre(selectedGenre === genre ? null : genre)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                  selectedGenre === genre
-                    ? 'bg-red-600 text-white shadow-md'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                {genre}
-              </button>
-            ))}
+              {specialFilters.map(f => (
+                <button
+                  key={f.value}
+                  onClick={() => setSelectedGenre(selectedGenre === f.value ? null : f.value)}
+                  className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                    selectedGenre === f.value
+                      ? 'bg-red-600 text-white shadow-md'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+              {allGenres.slice(0, 8).map(genre => (
+                <button
+                  key={genre}
+                  onClick={() => setSelectedGenre(selectedGenre === genre ? null : genre)}
+                  className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                    selectedGenre === genre
+                      ? 'bg-red-600 text-white shadow-md'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  }`}
+                >
+                  {genre}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
@@ -486,7 +486,7 @@ function App() {
           </p>
         </div>
 
-  <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
           {filteredMovies.map(movie => (
             <div key={movie.id} className="relative">
               {comparisonMovies.length < 2 && (
