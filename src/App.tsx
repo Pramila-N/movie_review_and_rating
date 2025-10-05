@@ -371,7 +371,7 @@ function App() {
 
   <main className="max-w-7xl mx-auto px-2 sm:px-4 py-6 sm:py-8">
       {badgeNotification && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-lg text-base sm:text-lg font-semibold flex items-center gap-2 sm:gap-3 animate-fadeIn">
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-white/90 text-red-700 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-lg text-base sm:text-lg font-semibold flex items-center gap-2 sm:gap-3 animate-fadeIn border border-red-200">
              {badgeNotification.icons && badgeNotification.icons.map((icon, i) => (
                <span key={i} className="text-2xl drop-shadow">{icon}</span>
              ))}
