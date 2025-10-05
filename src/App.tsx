@@ -303,34 +303,16 @@ function App() {
       )}
           </div>
 
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-red-400" />
+          <div className="flex flex-col md:flex-row gap-3 items-center">
+            <div className="w-full max-w-xs relative">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-red-400" />
               <input
                 type="text"
                 placeholder="Search movies..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-red-400/30 bg-gray-900 text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors duration-200"
+                className="w-full pl-8 pr-2 py-2 rounded-md border border-red-400/30 bg-gray-900 text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-red-500 text-sm transition-colors duration-200"
               />
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Filter className="w-5 h-5 text-red-400" />
-              <select
-                title="Select Genre or Filter"
-                value={selectedGenre || ''}
-                onChange={(e) => setSelectedGenre(e.target.value || null)}
-                className="px-4 py-2.5 rounded-lg border border-red-400/30 bg-gray-900 text-white focus:ring-2 focus:ring-red-500 transition-colors duration-200"
-              >
-                <option value="">All Movies</option>
-                {specialFilters.map(f => (
-                  <option key={f.value} value={f.value}>{f.label}</option>
-                ))}
-                {allGenres.map(genre => (
-                  <option key={genre} value={genre}>{genre}</option>
-                ))}
-              </select>
             </div>
           </div>
 
@@ -340,6 +322,7 @@ function App() {
                 key="all"
                 onClick={() => {
                   setSelectedGenre(null);
+                  document.getElementById('movie-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                   !selectedGenre
@@ -352,7 +335,10 @@ function App() {
               {specialFilters.map(f => (
                 <button
                   key={f.value}
-                  onClick={() => setSelectedGenre(selectedGenre === f.value ? null : f.value)}
+                  onClick={() => {
+                    setSelectedGenre(selectedGenre === f.value ? null : f.value);
+                    document.getElementById('movie-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
                   className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                     selectedGenre === f.value
                       ? 'bg-red-600 text-white shadow-md'
@@ -365,7 +351,10 @@ function App() {
               {allGenres.slice(0, 8).map(genre => (
                 <button
                   key={genre}
-                  onClick={() => setSelectedGenre(selectedGenre === genre ? null : genre)}
+                  onClick={() => {
+                    setSelectedGenre(selectedGenre === genre ? null : genre);
+                    document.getElementById('movie-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
                   className={`px-3 py-1 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
                     selectedGenre === genre
                       ? 'bg-red-600 text-white shadow-md'
@@ -398,15 +387,15 @@ function App() {
           const motdReviews = reviews.filter(r => r.movieId === motd.id);
           const avgRating = motdReviews.length > 0 ? (motdReviews.reduce((sum, r) => sum + r.rating, 0) / motdReviews.length).toFixed(1) : 'N/A';
           return (
-            <section className="mb-6 sm:mb-10">
-              <div className="flex flex-col md:flex-row items-center bg-gradient-to-br from-gray-900 to-black rounded-2xl sm:rounded-3xl shadow-xl border border-gray-800 overflow-hidden relative max-w-full sm:max-w-none mx-auto" style={{maxWidth:'420px'}}>
+            <section className="mb-4 sm:mb-8 w-full">
+              <div className="flex flex-col md:flex-row items-center bg-gradient-to-br from-gray-900 to-black rounded-xl sm:rounded-2xl shadow-lg border border-gray-800 overflow-hidden relative w-full max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl xl:max-w-5xl mx-auto">
                 <img
                   src={motd.poster || 'https://via.placeholder.com/400x600?text=No+Image'}
                   alt={motd.title}
-                  className="w-full md:w-56 h-36 sm:h-52 md:h-64 object-cover md:rounded-l-2xl md:rounded-r-none rounded-t-2xl md:rounded-t-none shadow-lg border-r border-gray-800"
+                  className="w-full md:w-40 h-28 sm:h-36 md:h-44 object-cover md:rounded-l-xl md:rounded-r-none rounded-t-xl md:rounded-t-none shadow border-r border-gray-800"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600?text=No+Image'; }}
                 />
-                <div className="flex-1 p-2 sm:p-5 flex flex-col gap-2 sm:gap-4 relative w-full">
+                <div className="flex-1 p-2 sm:p-4 flex flex-col gap-2 sm:gap-3 relative w-full">
                   <div className="absolute inset-0 pointer-events-none rounded-3xl md:rounded-l-none md:rounded-r-3xl bg-black/40" />
                   <div className="relative z-10 flex flex-col gap-4">
                     <div className="flex items-center gap-3 mb-2">
@@ -429,7 +418,7 @@ function App() {
                       <span>Cast:</span>
                       {motd.cast.map(c => <span key={c} className="bg-red-800/80 px-2 py-0.5 rounded-full drop-shadow">{c}</span>)}
                     </div>
-                    <div className="flex gap-2 flex-wrap mb-2">
+                    <div className="flex flex-wrap gap-2 mb-2 w-full">
                       <button
                         title={watchlist.includes(motd.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
                         onClick={() => handleToggleWatchlist(motd.id)}
@@ -486,7 +475,7 @@ function App() {
           </p>
         </div>
 
-  <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+  <div id="movie-grid" className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-6">
           {filteredMovies.map(movie => (
             <div key={movie.id} className="relative">
               {comparisonMovies.length < 2 && (
