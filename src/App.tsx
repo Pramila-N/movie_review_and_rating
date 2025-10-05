@@ -230,24 +230,24 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
+            <div className="flex items-center gap-1 sm:gap-4 mt-2 sm:mt-0">
               <button
                 onClick={() => setShowWatchlist(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-700 to-red-900 hover:from-red-600 hover:to-red-700 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 bg-white text-red-700 border border-red-400 shadow hover:bg-red-100"
                 title="View Watchlist"
               >
-                <Bookmark className="w-5 h-5" />
+                <Bookmark className="w-4 h-4" />
                 Watchlist
                 {watchlist.length > 0 && (
-                  <span className="ml-1 bg-red-600 text-white rounded-full px-2 py-0.5 text-xs font-bold">{watchlist.length}</span>
+                  <span className="ml-1 bg-red-400 text-white rounded-full px-2 py-0.5 text-xs font-bold">{watchlist.length}</span>
                 )}
               </button>
               {comparisonMovies.length === 2 && (
                 <button
                   onClick={() => setShowComparison(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white rounded-lg font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 bg-white text-red-700 border border-red-400 shadow hover:bg-red-100"
                 >
-                  <GitCompare className="w-5 h-5" />
+                  <GitCompare className="w-4 h-4" />
                   Compare ({comparisonMovies.length})
                 </button>
               )}
@@ -398,15 +398,15 @@ function App() {
           const motdReviews = reviews.filter(r => r.movieId === motd.id);
           const avgRating = motdReviews.length > 0 ? (motdReviews.reduce((sum, r) => sum + r.rating, 0) / motdReviews.length).toFixed(1) : 'N/A';
           return (
-            <section className="mb-8 sm:mb-10">
-              <div className="flex flex-col md:flex-row items-center bg-gradient-to-br from-gray-900 to-black rounded-3xl shadow-xl border border-gray-800 overflow-hidden relative">
+            <section className="mb-6 sm:mb-10">
+              <div className="flex flex-col md:flex-row items-center bg-gradient-to-br from-gray-900 to-black rounded-2xl sm:rounded-3xl shadow-xl border border-gray-800 overflow-hidden relative max-w-full sm:max-w-none mx-auto" style={{maxWidth:'420px'}}>
                 <img
                   src={motd.poster || 'https://via.placeholder.com/400x600?text=No+Image'}
                   alt={motd.title}
-                  className="w-full md:w-72 h-56 sm:h-72 md:h-80 object-cover md:rounded-l-3xl md:rounded-r-none rounded-t-3xl md:rounded-t-none shadow-lg border-r border-gray-800"
+                  className="w-full md:w-56 h-36 sm:h-52 md:h-64 object-cover md:rounded-l-2xl md:rounded-r-none rounded-t-2xl md:rounded-t-none shadow-lg border-r border-gray-800"
                   onError={(e) => { (e.currentTarget as HTMLImageElement).src = 'https://via.placeholder.com/400x600?text=No+Image'; }}
                 />
-                <div className="flex-1 p-4 sm:p-8 flex flex-col gap-3 sm:gap-4 relative w-full">
+                <div className="flex-1 p-2 sm:p-5 flex flex-col gap-2 sm:gap-4 relative w-full">
                   <div className="absolute inset-0 pointer-events-none rounded-3xl md:rounded-l-none md:rounded-r-3xl bg-black/40" />
                   <div className="relative z-10 flex flex-col gap-4">
                     <div className="flex items-center gap-3 mb-2">
@@ -429,26 +429,26 @@ function App() {
                       <span>Cast:</span>
                       {motd.cast.map(c => <span key={c} className="bg-red-800/80 px-2 py-0.5 rounded-full drop-shadow">{c}</span>)}
                     </div>
-                    <div className="flex gap-3 flex-wrap mb-2">
+                    <div className="flex gap-2 flex-wrap mb-2">
                       <button
                         title={watchlist.includes(motd.id) ? 'Remove from Watchlist' : 'Add to Watchlist'}
                         onClick={() => handleToggleWatchlist(motd.id)}
-                        className={`flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border ${watchlist.includes(motd.id) ? 'bg-red-700 text-white border-red-700' : 'bg-gray-800 text-red-300 border-red-700 hover:bg-red-900/60'} shadow`}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border shadow ${watchlist.includes(motd.id) ? 'bg-red-400 text-white border-red-400' : 'bg-white text-red-700 border-red-400 hover:bg-red-100'}`}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${watchlist.includes(motd.id) ? 'fill-white' : 'fill-none'}`} viewBox="0 0 24 24"><path d="M19 21 12 17.27 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" className={`w-4 h-4 ${watchlist.includes(motd.id) ? 'fill-white' : 'fill-none'}`} viewBox="0 0 24 24"><path d="M19 21 12 17.27 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                         {watchlist.includes(motd.id) ? 'In Watchlist' : 'Add to Watchlist'}
                       </button>
                       <button
                         title="Like Movie"
                         onClick={() => handleLikeMovie(motd.id)}
-                        className="flex items-center gap-1 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-800 text-red-300 border border-red-700 hover:bg-red-900/60 shadow"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 bg-white text-red-700 border border-red-400 hover:bg-red-100 shadow"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24"><path d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.5 16 21 16 21H12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24"><path d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.5 16 21 16 21H12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
                         {movieLikes[motd.id] || 0}
                       </button>
                       <button
                         onClick={() => setSelectedMovie(motd)}
-                        className="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 drop-shadow-lg"
+                        className="px-4 py-1.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-400 hover:to-red-500 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200 drop-shadow-lg text-xs sm:text-sm"
                       >
                         View Details
                       </button>
@@ -486,7 +486,7 @@ function App() {
           </p>
         </div>
 
-  <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+  <div className="grid grid-cols-1 min-[360px]:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {filteredMovies.map(movie => (
             <div key={movie.id} className="relative">
               {comparisonMovies.length < 2 && (
